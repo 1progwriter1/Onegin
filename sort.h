@@ -11,5 +11,7 @@ int compint(int a, int b);
 int compchar(char a, char b);
 int CompStrRev(const struct Compare *words);
 void PrintDataSort(int *data, int left_c, int right_c, int left, int right, int mid);
+void OneginSort(const char *filename);
+void OneginSortRev(const char *filename);
 
 #endif

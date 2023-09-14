@@ -4,13 +4,16 @@
 #include "pointer.h"
 #include <assert.h>
 #include "values.h"
+#include <ctype.h>
 
 #define $$$ fprintf(stderr, "check %d\n\n", __LINE__);
 
-void OneginSort() {
+void OneginSort(const char *filename) {
+
+
 }
 
-void OneginSortRev() {
+void OneginSortRev(const char *filename) {
 }
 
 void PrintDataSort(int *data, int left_c, int right_c, int left, int right, int mid) {
@@ -169,14 +172,24 @@ int compchar(char a, char b) {
 }
 
 int CompStrRev(const struct Compare *words) {
+
+    assert(words);
+
     char *a = words->a;
     char *b = words->b;
-    int col = words->col, lena = words->lena, lenb = words->lenb;
-    a += lena - 1;
-    b += lenb - 1;
-    for (size_t i = 0; i < col; i++) {
+    int len_a = words->len_a, len_b = words->len_b;
+
+    a += len_a - 1;
+    b += len_b - 1;
+
+    while (1) {
+        /* if (!isalpha(*a))
+            *a--;
+        if (!isalpha(*b))
+            *b--; */
         if (*a-- != *b--)
             return 0;
     }
+
     return 1;
 }

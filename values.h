@@ -3,14 +3,23 @@
 struct Text {
         long long int filelen;
         FILE *filename;
+        long long int NumOfWords;
         long long int NumOfStr;
-        int NumOfWords;
-    };
+};
 
 struct Compare {
     char *a;
     char *b;
-    int lena;
-    int lenb;
+    int len_a;
+    int len_b;
+};
+
+struct Pointers {
     int col;
+    char *ptrs[];
+};
+
+struct String {
+    char *str;
+    int len;
 };

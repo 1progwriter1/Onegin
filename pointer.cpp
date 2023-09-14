@@ -124,25 +124,46 @@ void SortStr(char *data, size_t cols, size_t rows) {
     } while (!sorted);
 }
 
-char **fileread(struct Text *filedata, char *buffer) {
+struct String **fileread(struct Text *filedata, struct Pointers *dataptr) {
 
     assert(filedata->filename);
 
-    char **data = (char **) calloc (filedata->NumOfStr, sizeof (char *));
     char *buf = (char *) calloc (filedata->filelen + 1, sizeof (char));
+    fread(buf, sizeof (char), filedata->filelen, filedata->filename);
 
-    fread(buf, sizeof (char), filedata->filelen, fopen("uncle.txt", "r"));
+    filedata->NumOfStr = NumOfStr(buf, filedata->filelen);
+    String **data = (String **) calloc (filedata->NumOfStr, sizeof (String *));
 
-    *data = buf;
-    int index = 1;
+    (*data)->str = buf;
+    /* int index = 1;
+    int length = 0;
 
     for (size_t i = 0; i < filedata->filelen; i++) {
+
         if (buf[i] == '\n') {
             buf[i] = '\0';
-            *(data + index++) = buf + i + 1;
-            filedata->NumOfWords++;
+
+            data[index]->str = buf + i + 1;
+            fprintf(stderr, "%s", buf + i + 1);
+            data[index - 1]->len = length;
+            length = 0;
+            index++;
+        }
+        else {
+            length++;
         }
     }
-    buffer = buf;
-    return data;
+    dataptr->col = 2;
+    dataptr->ptrs[0] = (char *) data;
+    dataptr->ptrs[1] = buf; */
+
+    return NULL;
+}
+
+void Detor(struct Pointers *data) {
+
+    assert(data);
+
+    for (size_t i = 0; i < data->col; i++)
+        free(data->ptrs[i]);
 }
