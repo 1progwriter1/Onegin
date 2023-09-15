@@ -111,3 +111,5 @@ int GetArgs(int argc, const char *argv[], struct Args *maindata) {
 void cleanfile(const char *filename) {
     FILE *fn = fileopen(filename, WRITE);
 }
+
+

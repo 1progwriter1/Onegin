@@ -26,8 +26,8 @@ struct Compare {
 };
 
 struct Pointers {
-    int col;
-    char *ptrs[];
+    char *buffer;
+    char *data;
 };
 
 struct String {

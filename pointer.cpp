@@ -175,14 +175,14 @@ void divstr(struct Text *filedata, struct Pointers *dataptr, String *data, char 
             length++;
         }
     }
-    dataptr->col = 1;
-    dataptr->ptrs[0] = buf;
+    dataptr->buffer = buf;
+    dataptr->data = (char *) data;
 }
 
 void Detor(struct Pointers *data) {
 
     assert(data);
 
-    for (size_t i = 0; i < data->col; i++)
-        free(data->ptrs[i]);
+    free(data->buffer);
+    free(data->data);
 }
