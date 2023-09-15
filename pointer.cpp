@@ -11,6 +11,16 @@ void swapptr(char *a, char *b) {
     b = temp;
 }
 
+void swapstruct(String *st1, String *st2) {
+
+        assert(st1);
+        assert(st2);
+
+        String *temp = st1;
+        st1 = st2;
+        st2 = temp;
+}
+
 void swapwords(char *a, char *b, const int rows) {
 
     assert(a);
@@ -96,15 +106,17 @@ char **DataPointerBuf(const char *file, int *NumOfWords) {
     return data;
 }
 
-void SortStrPtr(char **data, size_t len) {
+void SortStruct(String *data, size_t len) {
 
     int sorted = 1;
     do {
         sorted = 1;
-        for (size_t i = 0; i < len - 1; i++) {
-            if (strcmp(*(data + i), *(data + i + 1)) > 0) {
+        for (size_t i = 0; i < len - 2; i++) {
+            if (strcmp(data[i].str, data[i + 1].str) > 0) {
                 sorted = 0;
-                swapptr(*(data + i), *(data + i + 1));
+                String temp = data[i];
+                data[i] = data[i + 1];
+                data[i + 1] = temp;
             }
         }
     } while (!sorted);
@@ -124,40 +136,46 @@ void SortStr(char *data, size_t cols, size_t rows) {
     } while (!sorted);
 }
 
-struct String **fileread(struct Text *filedata, struct Pointers *dataptr) {
+char *readbuf(struct Text *filedata) {
 
+    assert(filedata);
     assert(filedata->filename);
 
     char *buf = (char *) calloc (filedata->filelen + 1, sizeof (char));
     fread(buf, sizeof (char), filedata->filelen, filedata->filename);
 
     filedata->NumOfStr = NumOfStr(buf, filedata->filelen);
-    String **data = (String **) calloc (filedata->NumOfStr, sizeof (String *));
 
-    (*data)->str = buf;
-    /* int index = 1;
+    return buf;
+}
+
+void divstr(struct Text *filedata, struct Pointers *dataptr, String *data, char *buf) {
+
+    assert(filedata);
+    assert(dataptr);
+    assert(data);
+    assert(buf);
+
     int length = 0;
+    char *nextstr = buf;
+
+    int index = 0;
 
     for (size_t i = 0; i < filedata->filelen; i++) {
 
-        if (buf[i] == '\n') {
-            buf[i] = '\0';
-
-            data[index]->str = buf + i + 1;
-            fprintf(stderr, "%s", buf + i + 1);
-            data[index - 1]->len = length;
+        if (*(buf + i) == '\n') {
+            *(buf + i) = '\0';
+            data[index].len = length;
+            data[index++].str = nextstr;
+            nextstr = buf + i + 1;
             length = 0;
-            index++;
         }
         else {
             length++;
         }
     }
-    dataptr->col = 2;
-    dataptr->ptrs[0] = (char *) data;
-    dataptr->ptrs[1] = buf; */
-
-    return NULL;
+    dataptr->col = 1;
+    dataptr->ptrs[0] = buf;
 }
 
 void Detor(struct Pointers *data) {

@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include "values.h"
+#include <string.h>
 
 void swap(int &a, int &b) {
     int temp = a;
@@ -59,12 +60,29 @@ void SetStructText(struct Text *data, const char *filename) {
     data->filename = fileopen(filename);
     data->NumOfWords = 0;
     data->NumOfStr = 0;
+
 }
 
-void PrintData(struct String **data, long long int NumOfStr) {
+void PrintData(String *data, long long int NumOfStr) {
 
     assert(data);
 
-    for (size_t i = 0; i < NumOfStr; i++)
-        printf("%s\n", data[i]->str);
+    for (size_t i = 0; i < NumOfStr - 1; i++) {
+        if (data[i].len == 0)
+            continue;
+        printf("%s\n", data[i].str);
+    }
+}
+
+void PrintDataFile(String *data, long long int NumOfStr, const char *filename) {
+
+    assert(data);
+
+    FILE *fn = fopen(filename, "w");
+
+    for (size_t i = 0; i < NumOfStr - 1; i++) {
+        if (data[i].len == 0)
+            continue;
+        fprintf(fn, "%s\n", data[i].str);
+    }
 }

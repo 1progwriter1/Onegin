@@ -5,13 +5,7 @@
 #include <assert.h>
 #include "values.h"
 #include <ctype.h>
-
-#define $$$ fprintf(stderr, "check %d\n\n", __LINE__);
-
-void OneginSort(const char *filename) {
-
-
-}
+#include <string.h>
 
 void OneginSortRev(const char *filename) {
 }
@@ -174,6 +168,8 @@ int compchar(char a, char b) {
 int CompStrRev(const struct Compare *words) {
 
     assert(words);
+    assert(words->a);
+    assert(words->b);
 
     char *a = words->a;
     char *b = words->b;
@@ -182,14 +178,64 @@ int CompStrRev(const struct Compare *words) {
     a += len_a - 1;
     b += len_b - 1;
 
-    while (1) {
-        /* if (!isalpha(*a))
-            *a--;
-        if (!isalpha(*b))
-            *b--; */
-        if (*a-- != *b--)
+    if (len_a == 0) {
+        if (len_b == 0)
             return 0;
+        else
+            return -1;
     }
 
-    return 1;
+    if (len_b == 0) {
+        if (len_a == 0)
+            return 0;
+        else
+            return 1;
+    }
+
+    while (a > words->a || b > words->b) {
+
+        if (!isalpha(*a))
+            a--;
+        if (!isalpha(*b))
+            b--;
+
+        if (a == words->a) {
+            if (b == words->b)
+                return 0;
+            else
+                return -1;
+        }
+        if (b == words->b) {
+            if (a == words->a)
+                return 0;
+            else
+                return 1;
+        }
+
+        if (*a != *b)
+            return strcmp(a--, b--);
+        a--;
+        b--;
+
+    }
+    return 0;
+}
+
+int compare(const void *a, const void *b) {
+
+    assert(a);
+    assert(b);
+
+    const String *s1 = (String *) a;
+    const String *s2 = (String *) b;
+
+    Compare words = {s1->str, s2->str, s1->len, s2->len};
+
+    return CompStrRev(&words);
+
+}
+
+void Sort(String *data, struct Text *filedata) {
+
+    qsort(data, filedata->NumOfStr - 1, sizeof (String), compare);
 }

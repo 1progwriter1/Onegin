@@ -2,19 +2,28 @@
 #include "values.h"
 #include "func.h"
 #include "pointer.h"
+#include <cstdlib>
+#include "sort.h"
 
 int main() {
 
-    const char onegin_rus[] = "onegin_rus.txt";
-    const char onegin_eng[] = "onegin_eng.txt";
 
     Text filedata = {0, NULL, 0, 0};
-    SetStructText(&filedata, onegin_rus);
+    SetStructText(&filedata, onegin_eng);
 
     Pointers ptrs = {0, {}};
-    struct String **data = fileread(&filedata, &ptrs);
+    char *buffer = readbuf(&filedata);
 
-    // PrintData(data, filedata.NumOfStr);
+    String data[filedata.NumOfStr];
+    divstr(&filedata, &ptrs, data, buffer);
+
+    SortStruct(data, filedata.NumOfStr);
+
+    // Sort(data, &filedata);
+
+    PrintData(data, filedata.NumOfStr);
+
+    PrintDataFile(data, filedata.NumOfStr, onegin_output);
 
     Detor(&ptrs);
 
