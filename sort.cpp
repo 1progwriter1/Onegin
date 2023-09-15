@@ -194,10 +194,14 @@ int CompStrRev(const struct Compare *words) {
 
     while (a > words->a || b > words->b) {
 
-        if (!isalpha(*a))
+        if (!isalpha(*a)) {
             a--;
-        if (!isalpha(*b))
+            continue;
+        }
+        if (!isalpha(*b)) {
             b--;
+            continue;
+        }
 
         if (a == words->a) {
             if (b == words->b)
@@ -221,7 +225,7 @@ int CompStrRev(const struct Compare *words) {
     return 0;
 }
 
-int compare(const void *a, const void *b) {
+int CompareStruct(const void *a, const void *b) {
 
     assert(a);
     assert(b);
@@ -237,5 +241,16 @@ int compare(const void *a, const void *b) {
 
 void Sort(String *data, struct Text *filedata) {
 
-    qsort(data, filedata->NumOfStr - 1, sizeof (String), compare);
+    qsort(data, filedata->NumOfStr - 1, sizeof (String), CompareStruct);
+}
+
+int CompareStr(const void *a, const void *b) {
+
+    assert(a);
+    assert(b);
+
+    char *s1 = (char *) a;
+    char *s2 = (char *) b;
+
+    return strcmp(s1, s2);
 }

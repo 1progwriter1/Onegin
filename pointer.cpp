@@ -3,6 +3,7 @@
 #include <string.h>
 #include "func.h"
 #include "values.h"
+#include "sort.h"
 
 void swapptr(char *a, char *b) {
 
@@ -112,7 +113,7 @@ void SortStruct(String *data, size_t len) {
     do {
         sorted = 1;
         for (size_t i = 0; i < len - 2; i++) {
-            if (strcmp(data[i].str, data[i + 1].str) > 0) {
+            if (CompareStr(data[i].str, data[i + 1].str) > 0) {
                 sorted = 0;
                 String temp = data[i];
                 data[i] = data[i + 1];

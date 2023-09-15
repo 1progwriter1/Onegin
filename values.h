@@ -6,9 +6,10 @@
 const char onegin_rus[] = "onegin_rus.txt";
 const char onegin_eng[] = "onegin_eng.txt";
 const char onegin_output[] = "onegin_out.txt";
-const char read[] = "r";
-const char write[] = "w";
-const char append[] = "a";
+const char onegin_big[] = "onegin.txt";
+const char READ[] = "r";
+const char WRITE[] = "w";
+const char APPEND[] = "a";
 
 struct Text {
         long long int filelen;
@@ -32,6 +33,11 @@ struct Pointers {
 struct String {
     char *str;
     int len;
+};
+
+struct Args {
+    int file;
+    int reverse;
 };
 
 #endif

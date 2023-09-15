@@ -20,6 +20,7 @@ long long int filelen(const char *filename) {
 
     assert(filename);
 
+    errno = 0;
     struct stat buf = {};
     stat(filename, &buf);
 
@@ -27,11 +28,11 @@ long long int filelen(const char *filename) {
 }
 
 
-FILE *fileopen(const char *filename) {
+FILE *fileopen(const char *filename, const char *mode) {
 
     assert(filename);
 
-    FILE *fn = fopen(filename, "r");
+    FILE *fn = fopen(filename, mode);
 
     errno = 0;
     if (fn == NULL)
@@ -57,7 +58,7 @@ long long int NumOfStr(const char *str, size_t len) {
 void SetStructText(struct Text *data, const char *filename) {
 
     data->filelen = filelen(filename);
-    data->filename = fileopen(filename);
+    data->filename = fileopen(filename, READ);
     data->NumOfWords = 0;
     data->NumOfStr = 0;
 
@@ -78,11 +79,35 @@ void PrintDataFile(String *data, long long int NumOfStr, const char *filename) {
 
     assert(data);
 
-    FILE *fn = fopen(filename, "w");
+    FILE *fn = fileopen(filename, APPEND);
 
     for (size_t i = 0; i < NumOfStr - 1; i++) {
         if (data[i].len == 0)
             continue;
         fprintf(fn, "%s\n", data[i].str);
     }
+    fprintf(fn, "\n");
+    if (fclose(fn) != 0)
+        fprintf(stderr, "File not closed\n");
+}
+
+int GetArgs(int argc, const char *argv[], struct Args *maindata) {
+
+    maindata->reverse = 0;
+    maindata->file = 0;
+
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--file") == 0)
+            maindata->file = 1;
+
+        else if (strcmp(argv[i], "--reverse") == 0)
+            maindata->reverse = 1;
+
+        else printf("Invalid argument %s\n", argv[i]);
+    }
+    return 1;
+}
+
+void cleanfile(const char *filename) {
+    FILE *fn = fileopen(filename, WRITE);
 }

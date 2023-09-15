@@ -5,11 +5,13 @@
 #include <cstdlib>
 #include "sort.h"
 
-int main() {
+int main(const int argc, const char *argv[]) {
 
+    Args mainargs = {0, 0};
+    GetArgs(argc, argv, &mainargs);
 
     Text filedata = {0, NULL, 0, 0};
-    SetStructText(&filedata, onegin_eng);
+    SetStructText(&filedata, onegin_big);
 
     Pointers ptrs = {0, {}};
     char *buffer = readbuf(&filedata);
@@ -17,13 +19,23 @@ int main() {
     String data[filedata.NumOfStr];
     divstr(&filedata, &ptrs, data, buffer);
 
-    SortStruct(data, filedata.NumOfStr);
+    if (mainargs.file == 0) {
 
-    // Sort(data, &filedata);
+        if (mainargs.reverse == 0)
+            SortStruct(data, filedata.NumOfStr);
+        else
+            Sort(data, &filedata);
 
-    PrintData(data, filedata.NumOfStr);
-
-    PrintDataFile(data, filedata.NumOfStr, onegin_output);
+        PrintData(data, filedata.NumOfStr);
+    }
+    else {
+        cleanfile(onegin_output);
+        PrintDataFile(data, filedata.NumOfStr, onegin_output);
+        SortStruct(data, filedata.NumOfStr);
+        PrintDataFile(data, filedata.NumOfStr, onegin_output);
+        Sort(data, &filedata);
+        PrintDataFile(data, filedata.NumOfStr, onegin_output);
+    }
 
     Detor(&ptrs);
 

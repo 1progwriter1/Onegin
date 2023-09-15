@@ -13,7 +13,8 @@ int compint(int a, int b);
 int compchar(char a, char b);
 int CompStrRev(const struct Compare *words);
 void PrintDataSort(int *data, int left_c, int right_c, int left, int right, int mid);
-int compare(const void *a, const void *b);
+int CompareStruct(const void *a, const void *b);
 void Sort(String *data, struct Text *filedata);
+int CompareStr(const void *a, const void *b);
 
 #endif
