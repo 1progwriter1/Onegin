@@ -22,98 +22,21 @@ void swapstruct(String *st1, String *st2) {
         st2 = temp;
 }
 
-void swapwords(char *a, char *b, const int rows) {
-
-    assert(a);
-    assert(b);
-
-    int *pt1 = (int *) a;
-    int *pt2 = (int *) b;
-    char *dest = (char *) calloc (rows, sizeof (char));
-    int *pt3 = (int *) dest;
-
-    int col = max(strlen(a), strlen(b));
-
-    for (int i = 0; i * sizeof (int) < col; i++)
-        pt3[i] = pt1[i];
-    for (int i = 0; i * sizeof (int) < col; i++)
-        pt1[i] = pt2[i];
-    for (int i = 0; i * sizeof (int) < col; i++)
-        pt2[i] = pt3[i];
-
-    free(dest);
-}
-
-char **DataPointer(char **data, const char *file) {
+/**
+ * Sorts lines
+ *
+ * @param data Array of structs with information about lines
+ * @param len Length of array
+ */
+void SortStruct(String *data, size_t len) {
 
     assert(data);
-
-    FILE *filename = fopen (file, "r");
-
-    char string[1000];
-    char **pointer = data;
-    int i = 0;
-    int c = 0;
-
-    while ((c = getc (filename)) != EOF) {
-
-        if (c != '\n') {
-            string[i++] = c;
-        }
-        else {
-            string[i] = '\0';
-            *pointer++ = strdup (string);
-            i = 0;
-        }
-    }
-    return data;
-}
-
-char **DataPointerBuf(const char *file, int *NumOfWords) {
-
-    FILE *filename = fopen(file, "r");
-    int size = 2, c = 0, numofchar = 0, numofword = 0, sizedata = 2;
-
-    char **data = (char **) calloc (sizedata, sizeof (char *));
-    char **pointer = data;
-    char *buf = (char *) calloc (size, sizeof (char));
-
-    while ((c = getc (filename)) != EOF) {
-
-        if (numofchar+1 == size) {
-                size *= 2;
-                buf = (char *)realloc (buf, size);
-        }
-
-        if (c != '\n') {
-            buf[numofchar++] = c;
-        }
-        else {
-            if (++numofword > sizedata) {
-                sizedata *= 2;
-                data = (char **) realloc (data, sizedata * sizeof(char*));
-                if (data == NULL)
-                    return NULL;
-                pointer = data + numofword - 1;
-            }
-            buf[numofchar] = '\0';
-            *pointer++ = strdup (buf);
-            assert(pointer[-1]);
-            numofchar = 0;
-        }
-    }
-    free(buf);
-    *NumOfWords = numofword;
-    return data;
-}
-
-void SortStruct(String *data, size_t len) {
 
     int sorted = 1;
     do {
         sorted = 1;
         for (size_t i = 0; i < len - 2; i++) {
-            if (CompareStr(data[i].str, data[i + 1].str) > 0) {
+            if (strcmp(data[i].str, data[i + 1].str) > 0) {
                 sorted = 0;
                 String temp = data[i];
                 data[i] = data[i + 1];
@@ -123,20 +46,13 @@ void SortStruct(String *data, size_t len) {
     } while (!sorted);
 }
 
-void SortStr(char *data, size_t cols, size_t rows) {
-
-    int sorted = 1;
-    do {
-        sorted = 1;
-        for (size_t i = 0; i < cols - 1; i++) {
-            if (strcmp(data + i * rows, data + (i + 1) * rows) > 0) {
-                sorted = 0;
-                swapwords(data + i * rows, data + (i + 1) * rows, rows);
-            }
-        }
-    } while (!sorted);
-}
-
+/**
+ * Reads text from file
+ *
+ * @param filedata Struct with file data
+ *
+ * @return Pointer to the read text
+ */
 char *readbuf(struct Text *filedata) {
 
     assert(filedata);
@@ -150,7 +66,17 @@ char *readbuf(struct Text *filedata) {
     return buf;
 }
 
-void divstr(struct Text *filedata, struct Pointers *dataptr, String *data, char *buf) {
+/**
+ * Splits text into strings and writes information about them into an array of structures
+ *
+ * @param filedata Struct with filedata
+ * @param dataptr Struct with memory addresses
+ * @param data Array of structs with information about lines
+ * @param buf Pointer to the text
+ *
+ * @return Pointer to the array if structs with information about lines
+ */
+String *divstr(struct Text *filedata, struct Pointers *dataptr, String *data, char *buf) {
 
     assert(filedata);
     assert(dataptr);
@@ -177,12 +103,43 @@ void divstr(struct Text *filedata, struct Pointers *dataptr, String *data, char 
     }
     dataptr->buffer = buf;
     dataptr->data = (char *) data;
-}
 
+    fileclose(filedata->filename);
+
+    return data;
+
+}
+/**
+ * Frees up memory specified in struct Pointers
+ *
+ * @param data Struct with memory addresses
+ */
 void Detor(struct Pointers *data) {
 
     assert(data);
 
     free(data->buffer);
     free(data->data);
+}
+
+/**
+ * Writes information about strings from file to an array of structures
+ *
+ * @param filedata Struct with ifromstion about file
+ * @param ptrs Struct with memory addresses
+ *
+ * @return Pointer to an array of structures
+ */
+String *OpenFile(struct Text *filedata, struct Pointers *ptrs) {
+
+    assert(filedata);
+    assert(ptrs);
+
+    SetStructText(filedata, Onegin_big);
+    char *buffer = readbuf(filedata);
+
+    String *data = (String *) calloc (filedata->NumOfStr, sizeof (String));
+
+    return divstr(filedata, ptrs, data, buffer);
+
 }

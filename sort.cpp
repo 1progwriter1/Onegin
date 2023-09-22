@@ -7,9 +7,6 @@
 #include <ctype.h>
 #include <string.h>
 
-void OneginSortRev(const char *filename) {
-}
-
 void PrintDataSort(int *data, int left_c, int right_c, int left, int right, int mid) {
 
     for (int i = left_c; i < right_c; i++) {
@@ -73,81 +70,104 @@ int FindMinIndex(int *data, int len) {
     return index;
 }
 
-void SortPart(int *data, size_t left, size_t right) {
+int CompareSructRev(const String *st1, const String *st2) {
 
-    assert(data);
+    assert(st1);
+    assert(st2);
+    assert(st1->str);
+    assert(st2->str);
 
-    int mid = partition(data, left, right);
-    if (right - left > 1) {
-        if (mid - left > 1)
-            SortPart(data, left, mid);
-        if (right - mid > 1)
-            SortPart(data, mid + 1, right);
+    char *a = st1->str;
+    char *b = st2->str;
+    int len_a = st1->len, len_b = st2->len;
+
+    a += len_a - 1;
+    b += len_b - 1;
+
+    if (len_a == 0) {
+        if (len_b == 0)
+            return 0;
+        else
+            return -1;
     }
-    else if (left + 1 == right)
-        if (data[left] > data[right])
-            swap(data[left], data[right]);
 
+    if (len_b == 0) {
+        if (len_a == 0)
+            return 0;
+        else
+            return 1;
+    }
+
+    while (a > st1->str || b > st2->str) {
+
+        if (!isalpha(*a)) {
+            a--;
+            continue;
+        }
+        if (!isalpha(*b)) {
+            b--;
+            continue;
+        }
+
+        if (a == st1->str) {
+            if (b == st2->str)
+                return 0;
+            else
+                return -1;
+        }
+        if (b == st2->str) {
+            if (a == st1->str)
+                return 0;
+            else
+                return 1;
+        }
+
+        if (*a != *b)
+            return strcmp(a--, b--);
+        a--;
+        b--;
+
+    }
+    return 0;
 }
 
-int partition(int *data, size_t left, size_t right) {
+int partition(String *data, size_t left, size_t right) {
 
     assert(data);
-
-    int mid = (left + right) / 2;
-
-    int left_c = left;
-    int right_c = right;
 
     right--;
 
-    int board = data[mid];
+    int mid = randnum(left, right);
 
-    fprintf(stderr, "!!!!!!%d\n\nBase: ", board);
+    String board = data[mid];
 
-    for (int i = left; i <= right; i++)
-        fprintf(stderr, "%d ", data[i]);
-    fprintf(stderr, "\n\n");
-
-    int col = 0, num = 1;
-
-    while (left < right && col++ < 100) {
-
-        /* for (int i = left_c; i <= right_c; i++)
-            printf("%d ", data[i]);
-        printf("\n"); */
-
-        fprintf(stderr, "Searching for Left bad element: ");
-
-        while (data[left] < board) {
+    while (left < right) {
+        assert(data[left].str);
+        while (CompareSructRev(&data[left], &board) < 0) {
             left++;
-            fprintf(stderr, "%lu... ", left);
         }
 
-        fprintf(stderr, "FOUND [%lu], elem = %d\n", left, data[left]);
-
-        fprintf(stderr, "Searching for Right bad element: ");
-
-        while (data[right] >= board) {
+        while (CompareSructRev(&data[right], &board) > 0) {
             right--;
-            fprintf(stderr, "%lu... ", right);
         }
 
-        fprintf(stderr, "FOUND [%lu], elem = %d\n\n", right, data[right]);
-
-        PrintDataSort(data, left_c, right_c, left, right, -1);
-
-        /* printf("%d\n", data[0]); */
         if (right != left) {
-            fprintf(stderr, "Swapping [%lu] = %d and [%lu] = %d\n\n", left, data[left], right, data[right]);
-
-            swap(data[left], data[right]);
+            if (CompareSructRev(&data[left], &data[right]) == 0) {
+                if (CompareSructRev(&data[left], &board) < 0)
+                    left++;
+                else
+                    right--;
+            }
+            else {
+            String temp = {};
+            temp = data[left];
+            data[left] = data[right];
+            data[right] = temp;
+            }
         }
 
     }
     mid = min(left, right);
-
-    PrintDataSort(data, left_c, right_c, -1, -1, mid);
 
     return mid;
 }
@@ -156,13 +176,25 @@ int randnum(int min, int max) {
     return rand() % (max - min + 1) + min;
 }
 
-
 int compint(int a, int b) {
     return a = b;
 }
 
 int compchar(char a, char b) {
     return a == b;
+}
+
+int CompareStruct(const void *a, const void *b) {
+
+    assert(a);
+    assert(b);
+
+    const String *st1 = (String *) a;
+    const String *st2 = (String *) b;
+
+    Compare words = {st1->str, st2->str, st1->len, st2->len};
+
+    return CompStrRev(&words);
 }
 
 int CompStrRev(const struct Compare *words) {
@@ -225,32 +257,50 @@ int CompStrRev(const struct Compare *words) {
     return 0;
 }
 
-int CompareStruct(const void *a, const void *b) {
-
-    assert(a);
-    assert(b);
-
-    const String *s1 = (String *) a;
-    const String *s2 = (String *) b;
-
-    Compare words = {s1->str, s2->str, s1->len, s2->len};
-
-    return CompStrRev(&words);
-
-}
-
+/**
+ * Sorts strings from the end
+ *
+ * @param data Array of structs with information about lines
+ * @param filedata Struct with filedata
+ */
 void Sort(String *data, struct Text *filedata) {
 
     qsort(data, filedata->NumOfStr - 1, sizeof (String), CompareStruct);
 }
 
-int CompareStr(const void *a, const void *b) {
+int CompString(const String *a, const String *b) {
 
     assert(a);
     assert(b);
 
-    char *s1 = (char *) a;
-    char *s2 = (char *) b;
+    return strcmp(a->str, b->str);
+}
 
-    return strcmp(s1, s2);
+int compsrt(const void *a, const void *b) {
+
+    assert(a);
+    assert(b);
+
+    return strcmp((char *) a, (char *) b);
+}
+
+void Myqsort(String *data, size_t left, size_t right) {
+
+    assert(data);
+
+    int mid = partition(data, left, right);
+
+    if (right - left > 1) {
+        if (mid - left > 1)
+            Myqsort(data, left, mid);
+        if (right - mid > 1)
+            Myqsort(data, mid + 1, right);
+    }
+    else if (left + 1 == right)
+        if (CompareSructRev(&data[left], &data[right]) > 0) {
+            String temp = {};
+            temp = data[left];
+            data[left] = data[right];
+            data[right] = temp;
+        }
 }
